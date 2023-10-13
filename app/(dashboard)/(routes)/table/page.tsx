@@ -8,16 +8,22 @@ async function getData(): Promise<Task[]> {
         name: "Task 1",
         description: "This is the first task.",
         status: true,
+        priority: "urgent",
+        deadline: new Date('2023-10-13T12:34:56Z')
       },
       {
         name: "Task 2",
         description: "This is the second task.",
         status: false,
+        priority: "standard",
+        deadline: new Date('2023-10-13T12:34:56Z')
       },
         {
             name: "Task 3",
             description: "This is the third task.",
             status: true,
+            priority: "optional",
+            deadline: new Date('2023-10-13T12:34:56Z')
         },
       // ...
     ]
