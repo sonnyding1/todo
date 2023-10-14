@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/nextjs";
+import Navbar from "@/components/navbar";
 
 export default function DashBoardLayout({
     children
@@ -7,7 +7,7 @@ export default function DashBoardLayout({
 }) {
     return (
         <div>
-            <UserButton afterSignOutUrl="/"/>
+            <Navbar />
             {children}
         </div>
     )
