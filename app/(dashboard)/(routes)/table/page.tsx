@@ -9,12 +9,30 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from 'axios';
 import { formSchema } from "./constants";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import DatePicker from "@/components/date-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import Link from 'next/link'
+import { useRouter } from "next/navigation";
 
 
-export default async function TablePage() {
+export default function TablePage() {
     // const data = await getData();
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -25,35 +43,106 @@ export default async function TablePage() {
       }
     })
 
-    function onSubmit(data: z.infer<typeof formSchema>) {
+    async function onSubmit(data: z.infer<typeof formSchema>) {
       // TODO: try catch
-      const response = axios.post('/api/tasks', data);
+      try {
+        const response = await axios.post('/api/table', data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        router.refresh();
+      }
     }
 
-    const data = await axios.get('/api/tasks').then((response) => {
-      return response.data;
-    });
+    // const data = await axios.get('/api/tasks').then((response) => {
+    //   return response.data;
+    // });
 
     return (
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full justify-center items-center space-y-6 p-4">
+            <div className="flex w-full space-x-6 justify-center">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="flex-auto flex flex-col space-y-2">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col space-y-2">
+                    <FormLabel>Priority</FormLabel>
+                    <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="standard" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="urgent">Urgent</SelectItem>
+                        <SelectItem value="standard">Standard</SelectItem>
+                        <SelectItem value="optional">Optional</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="deadline"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col space-y-2">
+                    <FormLabel>Deadline</FormLabel>
+                    <FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant={"outline"} className="font-normal">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                // TODO: change db date
+                                initialFocus
+                            />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
-              name="name"
+              name="description"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full flex flex-col space-y-2">
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input />
+                    <Input {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
+            <Button type="submit">Submit</Button>
           </form>
         </Form>
-        <div className="container mx-auto py-10">
+        {/* <div className="container mx-auto py-10">
             <DataTable columns={columns} data={data} />
-        </div>
+        </div> */}
       </div>
     );
 }
