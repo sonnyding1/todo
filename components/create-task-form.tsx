@@ -46,7 +46,8 @@ export default function CreateTaskForm() {
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
       try {
-        const response = await axios.post('/api/table', data);
+        const response = await axios.post('/api/tasks', data);
+        form.reset();
       } catch (error) {
         console.log(error);
       } finally {

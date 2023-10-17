@@ -1,8 +1,7 @@
-import { Task } from "@/app/(dashboard)/(routes)/table/columns";
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
+import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
-
 
 export async function GET() {
     try {
@@ -45,6 +44,38 @@ export async function POST(
             }
         });
         console.log(newUser);
+        return new NextResponse("OK", { status: 200 });
+    } catch (error) {
+        console.log(error);
+        return new NextResponse("Bad Request", { status: 400 });
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        const { userId } = auth();
+        const { id } = await req.json();
+    
+        if (!userId) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+    
+        const task = await prismadb.task.findUnique({
+            where: {
+                id
+            }
+        });
+    
+        if (!task) {
+            return new NextResponse("Not Found", { status: 404 });
+        }
+    
+        await prismadb.task.delete({
+            where: {
+                id
+            }
+        });
+    
         return new NextResponse("OK", { status: 200 });
     } catch (error) {
         console.log(error);

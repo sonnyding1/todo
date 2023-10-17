@@ -6,14 +6,29 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ColumnDef } from "@tanstack/react-table";
+import axios from "axios";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export async function deleteTask(task: Task) {
+    const router = useRouter();
+
+    await axios.delete('/api/tasks', {
+        data: {
+            id: task.id
+        }
+    })
+    // window.location.reload();
+    router.refresh();
+}
 
 export type Task = {
+    id: string
     name: string
-    description: string
-    status: boolean
-    priority: "urgent" | "standard" | "optional"
+    description: string | null
+    completed: boolean
+    priority: string
     deadline: Date
 }
 
@@ -27,12 +42,12 @@ export const columns: ColumnDef<Task>[] = [
         header: 'Description',
     },
     {
-        accessorKey: 'status',
-        header: 'Status',
+        accessorKey: 'completed',
+        header: 'Completed',
         cell: ({ row }) => {
             return (
                 <div>
-                    <Checkbox checked={row.getValue("status")} />
+                    <Checkbox checked={row.getValue("completed")} />
                 </div>
             )
         }
@@ -89,4 +104,31 @@ export const columns: ColumnDef<Task>[] = [
             )
         }
     },
+    {
+        accessorKey: 'delete',
+        header: '',
+        cell: ({ row }) => {
+            const task = row.original;
+
+            return (
+                <Button 
+                    variant="ghost"
+                    size="icon"
+                    className="hover:bg-red-500"
+                    onClick={async () => {
+                        await axios.delete('/api/tasks', {
+                            data: {
+                                id: task.id
+                            }
+                        })
+                        window.location.reload();
+                        // deleteTask(task);
+                        // TODO: router reload in columns?
+                    }}
+                >
+                    <Trash2 className="h-4 w-4" />
+                </Button>
+            )
+        }
+    }
 ]
