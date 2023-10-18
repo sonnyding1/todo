@@ -51,6 +51,34 @@ export async function POST(
     }
 }
 
+export async function PUT(req: Request) {
+    try {
+        const { userId } = auth();
+        if (!userId) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+        const data = await req.json();
+        const { id, name, description, completed, priority, deadline } = data;
+        console.log(id);
+        await prismadb.task.update({
+            where: {
+                id
+            },
+            data: {
+                name,
+                description,
+                completed,
+                priority,
+                deadline
+            }
+        });
+        return new NextResponse("OK", { status: 200 });
+    } catch (error) {
+        console.log(error);
+        return new NextResponse("Bad Request", { status: 400 });
+    }
+}
+
 export async function DELETE(req: Request) {
     try {
         const { userId } = auth();

@@ -81,7 +81,7 @@ export default function CreateTaskForm() {
                     <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="standard" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="urgent">Urgent</SelectItem>
