@@ -13,18 +13,9 @@ import TableDeleteButton from "@/components/table-delete-button";
 import TableCompleted from "@/components/table-completed";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-export async function deleteTask(task: Task) {
-    const router = useRouter();
-
-    await axios.delete('/api/tasks', {
-        data: {
-            id: task.id
-        }
-    })
-    // window.location.reload();
-    router.refresh();
-}
+import TablePriority from "@/components/table-priority";
+import { CalendarIcon, Trash2 } from "lucide-react";
+import { format } from "date-fns";
 
 export type Task = {
     id: string
@@ -52,6 +43,25 @@ export const columns: ColumnDef<Task>[] = [
             return (
                 <TableCompleted task={task} />
             )
+            // return (
+            //     <div>
+            //         <Checkbox 
+            //             checked={task.completed} 
+            //             onCheckedChange={async () => {
+            //                 task.completed = !task.completed;
+            //                 await axios.put('/api/tasks', {
+            //                     id: task.id,
+            //                     name: task.name,
+            //                     description: task.description,
+            //                     completed: task.completed,
+            //                     priority: task.priority,
+            //                     deadline: task.deadline
+            //                 });
+            //                 // router.refresh();
+            //             }}
+            //         />
+            //     </div>
+            // )
         }
     },
     {
@@ -61,39 +71,34 @@ export const columns: ColumnDef<Task>[] = [
             const task = row.original;
 
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button className="h-6 rounded-full py-0 text-sm font-light">
-                            {task.priority}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>Change priority</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Urgent</DropdownMenuItem>
-                        <DropdownMenuItem>Standard</DropdownMenuItem>
-                        <DropdownMenuItem>Optional</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                // <FormItem className="flex flex-col space-y-2">
-                //     <FormLabel>Priority</FormLabel>
-                //     <FormControl>
-                //         <Select 
-                //             onValueChange={}
-                //             defaultValue={task.priority}
-                //         >
-                //         <SelectTrigger className="w-[180px]">
-                //             <SelectValue placeholder="standard" />
-                //         </SelectTrigger>
-                //         <SelectContent>
-                //             <SelectItem value="urgent">Urgent</SelectItem>
-                //             <SelectItem value="standard">Standard</SelectItem>
-                //             <SelectItem value="optional">Optional</SelectItem>
-                //         </SelectContent>
-                //         </Select>
-                //     </FormControl>
-                // </FormItem>
+                <TablePriority task={task} />
             )
+            // return (
+            //     <Select 
+            //         onValueChange={async (value) => {
+            //             task.priority = value;
+            //             await axios.put('/api/tasks', {
+            //                 id: task.id,
+            //                 name: task.name,
+            //                 description: task.description,
+            //                 completed: task.completed,
+            //                 priority: task.priority,
+            //                 deadline: task.deadline
+            //             }); 
+            //             // router.refresh();
+            //         }}
+            //         defaultValue={task.priority}
+            //     >
+            //     <SelectTrigger className="w-[180px]">
+            //         <SelectValue placeholder="standard" />
+            //     </SelectTrigger>
+            //     <SelectContent>
+            //         <SelectItem value="urgent">Urgent</SelectItem>
+            //         <SelectItem value="standard">Standard</SelectItem>
+            //         <SelectItem value="optional">Optional</SelectItem>
+            //     </SelectContent>
+            //     </Select>
+            // );
         }
     },
     {
@@ -101,9 +106,40 @@ export const columns: ColumnDef<Task>[] = [
         header: 'Deadline',
         cell: ({ row }) => {
             const task = row.original;
+            const date = task.deadline;
             return (
                 <TableDatePicker task={task} />
             )
+            // return (
+            //     <Popover>
+            //         <PopoverTrigger asChild>
+            //             <Button variant={"outline"} className="font-normal">
+            //                 <CalendarIcon className="mr-2 h-4 w-4" />
+            //                 {date ? format(date, "PPP") : <span>Pick a date</span>}
+            //             </Button>
+            //         </PopoverTrigger>
+            //         <PopoverContent className="w-auto p-0">
+            //             <Calendar
+            //                 mode="single"
+            //                 selected={date}
+            //                 onSelect={async (value) => {
+            //                     if (!value) return;
+            //                     task.deadline = value;
+            //                     await axios.put('/api/tasks', {
+            //                             id: task.id,
+            //                             name: task.name,
+            //                             description: task.description,
+            //                             completed: task.completed,
+            //                             priority: task.priority,
+            //                             deadline: task.deadline
+            //                     });
+            //                     // router.refresh();
+            //                 }}
+            //                 initialFocus
+            //             />
+            //         </PopoverContent>
+            //     </Popover>
+            // );
         }
     },
     {
@@ -115,6 +151,23 @@ export const columns: ColumnDef<Task>[] = [
             return (
                 <TableDeleteButton task={task} />
             )
+            // return (
+            //     <Button 
+            //         variant="ghost"
+            //         size="icon"
+            //         className="hover:bg-red-500"
+            //         onClick={async () => {
+            //             await axios.delete('/api/tasks', {
+            //                 data: {
+            //                     id: task.id
+            //                 }
+            //             })
+            //             // router.refresh();
+            //         }}
+            //     >
+            //         <Trash2 className="h-4 w-4" />
+            //     </Button>
+            // )
         }
     }
 ]

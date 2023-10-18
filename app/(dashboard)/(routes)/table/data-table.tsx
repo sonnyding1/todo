@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -34,11 +35,15 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
 
   })
+  const router = useRouter();
 
   return (
     <div>
       <div className="rounded-md border">
-        <Table>
+        <Table onChange={() => {
+          console.log("table changed");
+          router.refresh();
+        }}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
